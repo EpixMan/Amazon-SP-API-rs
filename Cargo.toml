@@ -3,6 +3,8 @@ name = "Amazon-SP-API-rs"
 version = "0.1.0"
 edition = "2021"
 description = "A library to make working with Amazon SP-API a bit easier."
+repository = "https://github.com/EpixMan/Amazon-SP-API-rs"
+keywords = ["Amazon", "sp-api"]
 
 [dependencies]
 reqwest = { version = "0.12.8", features = ["json"] }
