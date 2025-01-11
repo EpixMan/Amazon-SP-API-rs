@@ -6,4 +6,3 @@ description = "A library to make working with Amazon SP-API a bit easier."
 
 [dependencies]
 reqwest = { version = "0.12.8", features = ["json"] }
-
