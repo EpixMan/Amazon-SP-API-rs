@@ -6,5 +6,11 @@ description = "A library to make working with Amazon SP-API a bit easier."
 repository = "https://github.com/EpixMan/Amazon-SP-API-rs"
 keywords = ["Amazon", "sp-api"]
 license = "MIT"
+
+
 [dependencies]
-reqwest = { version = "0.12.8", features = ["json"] }
+serde_json = "1.0.132"
+serde = { version = "1.0.210", features = ["derive"] }
+reqwest = { version = "0.12.8", features = ["json", "blocking"] }
+thiserror = "1.0.65"
+url = "2.5.4"
