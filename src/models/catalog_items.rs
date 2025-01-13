@@ -99,7 +99,7 @@ impl CatalogItems {
     pub async fn get_catalog_item(
         client: &mut Client,
         asin: String,
-        marketplace_ids: Vec<String>,
+        marketplace_ids: Vec<CountryMarketplace>,
         included_data: Option<Vec<String>>,
         locale: Option<String>,
     ) -> Result<Response, Errors> {
