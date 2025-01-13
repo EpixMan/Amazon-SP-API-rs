@@ -75,7 +75,7 @@ impl ProductPricing {
     ///
     /// # Responses
     /// - **200 (Success):** Returns a `CompetitiveSummaryBatchResponse` object.
-    async fn get_competitive_summary(
+    pub async fn get_competitive_summary(
         client: &mut Client,
         asin: Vec<String>,
         market_place: CountryMarketplace,
