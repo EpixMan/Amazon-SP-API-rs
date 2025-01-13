@@ -1,8 +1,8 @@
+use std::borrow::Borrow;
 use crate::error_handling::Errors;
 use reqwest::header::HeaderMap;
 use serde::Deserialize;
 use serde_json::json;
-use std::collections::HashMap;
 use std::time::{ Instant};
 use reqwest::{ Response, Url};
 
@@ -10,7 +10,7 @@ const ENDPOINT_NA: &str = "https://sellingpartnerapi-na.amazon.com";
 const ENDPOINT_EU: &str = "https://sellingpartnerapi-eu.amazon.com";
 const ENDPOINT_FE: &str = "https://sellingpartnerapi-fe.amazon.com";
 
-enum CountryMarketplace {
+pub enum CountryMarketplace {
     Canada,
     UnitedStates,
     Mexico,
@@ -70,7 +70,7 @@ impl ClientInformation {
 }
 impl CountryMarketplace {
     /// Returns the marketplace ID and the endpoint for the given country.
-    fn details(&self) -> (&'static str, &'static str) {
+    pub fn details(&self) -> (&'static str, &'static str) {
         match self {
             CountryMarketplace::Canada => ("A2EUQ1WTGCTBG2", ENDPOINT_NA),
             CountryMarketplace::UnitedStates => ("ATVPDKIKX0DER", ENDPOINT_NA),
@@ -140,8 +140,14 @@ impl Client {
         header_map.insert("user-agent", "Amazon-SP-API-rs 0.1.0".parse().unwrap());
         header_map
     }
-    pub async fn make_request(&mut self, path: &str, method: reqwest::Method, parameters: HashMap<&str, &str>) -> Result<Response, Errors> {
-        parameters.push( ("marketplaceIds", self.client_information.country_marketplace.details().0));
+    pub async fn make_request<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: I) -> Result<Response, Errors>
+    where
+        I: IntoIterator,
+        I::Item: Borrow<(K, V)>,
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
+        //parameters.( ("marketplaceIds", self.client_information.country_marketplace.details().0));
         Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), parameters)?).headers(self.create_header()).send().await?)
     }
 }

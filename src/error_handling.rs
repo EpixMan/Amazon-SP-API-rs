@@ -9,4 +9,6 @@ pub enum Errors {
     ExpiredToken,
     #[error(transparent)]
     ParseError(#[from] ParseError),
+    #[error(transparent)]
+    SerdeError(#[from] serde_json::Error),
 }
