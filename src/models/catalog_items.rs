@@ -45,7 +45,7 @@ impl CatalogItems {
         let mut params: Vec<(String, String)> = Vec::new();
 
         // Add required parameters
-        params.push(("marketplaceIds".to_string(), marketplace_ids.iter().map(|b|b.details().0).join(",")));
+        params.push(("marketplaceIds".to_string(), marketplace_ids.iter().map(|b|b.details().0).collect::<Vec<String>>().join(",")));
 
         // Add optional parameters
         if let Some(ids) = identifiers {
