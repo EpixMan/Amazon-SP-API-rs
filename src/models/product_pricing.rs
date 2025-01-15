@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use reqwest::{Method, Response};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 use crate::error_handling::Errors;
 use crate::general::{Client, CountryMarketplace};
 pub enum CompetitiveSummaryIncludedData {
@@ -15,6 +17,15 @@ impl CompetitiveSummaryIncludedData {
             CompetitiveSummaryIncludedData::LowestPricedOffers => "lowestPricedOffers".to_string()
         }
     }
+}
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+struct CompetitiveSummaryData {
+    method: String,
+    uri: String,
+    marketplaceId: String,
+    asin: String,
+    includedData: Vec<String>,
 }
 pub struct ProductPricing;
 impl ProductPricing {
@@ -41,24 +52,25 @@ impl ProductPricing {
         market_place: crate::general::CountryMarketplace,
         sku: Vec<String>,
     ) -> Result<Response, Errors> {
+        const URL: &str = "/batches/products/pricing/2022-05-01/offer/featuredOfferExpectedPrice";
         const DEFAULT_URI: &str = "/products/pricing/2022-05-01/offer/featuredOfferExpectedPrice";
 
         let uri = uri.unwrap_or(DEFAULT_URI.to_string());
-        let mut params = vec![("uri".to_string(),uri.clone()), ("method".to_string(), method), ("marketplaceId".to_string(), market_place.details().0.to_string())];
+        let mut params: HashMap<String, String> = HashMap::from([("uri".to_string(),uri.clone()), ("method".to_string(), method), ("marketplaceId".to_string(), market_place.details().0.to_string())]);
         if let Some(o) = body {
-            params.push(("body".to_string(), o));
+            params.insert("body".to_string(), o);
         }
         if let Some(h) = headers {
-            params.push(("headers".to_string(), h.iter().map(|s| serde_json::to_string(&s).unwrap()).collect()));
+            params.insert("headers".to_string(), h.iter().map(|s| serde_json::to_string(&s).unwrap()).collect());
         }
-        let final_params: Vec<Vec<(String,String)>> = sku.iter().map(|small_sku| {
+        let final_params: Vec<HashMap<String,String>> = sku.iter().map(|small_sku| {
             let mut ff = params.clone();
-            ff.push((String::from("sku"), small_sku.clone()));
+            ff.insert(String::from("sku"), small_sku.clone());
             ff
         }).collect();
 
         client
-            .make_request(&uri, Method::POST, [("getFeaturedOfferExpectedPriceBatchRequestBody".to_string(), serde_json::to_string(&final_params)?)])
+            .make_request_w_body(URL, Method::POST, None::<Vec<(String, String)>>, serde_json::to_string(&HashMap::from([("requests".to_string(),final_params)]))?)
             .await
     }
 
@@ -83,29 +95,26 @@ impl ProductPricing {
         method: String,
         uri: Option<String>, // Optional custom URI
     ) -> Result<Response, Errors> {
-
+        const URL: &str = "/batches/products/pricing/2022-05-01/items/competitiveSummary";
         const DEFAULT_URI: &str = "/products/pricing/2022-05-01/items/competitiveSummary";
 
         let uri = uri.unwrap_or(DEFAULT_URI.to_string());
+        let data = &included_data.iter().map(|s| s.to_string()).collect::<Vec<String>>();
 
-        let mut params = vec![
-            ("uri".to_string(),uri.clone()),
-            ("method".to_string(), method),
-            ("marketplaceId".to_string(), market_place.details().0.to_string()),
-            (String::from("includedData"), included_data.iter().map(|s| s.to_string()).collect::<Vec<String>>().join(",")),
-        ];
-        let final_params: Vec<_> = asin.iter().map(|asin| {
-            let mut ff = params.clone();
-            ff.push((String::from("asin"), asin.clone()));
-            ff
-        }).collect();
-
-
-
-
+        let final_result = asin.iter().map(|a| {
+            CompetitiveSummaryData {
+                method: method.clone(),
+                uri: uri.clone(),
+                marketplaceId: market_place.details().0.to_string(),
+                asin: a.clone(),
+                includedData: data.clone(),
+            }
+        }).collect::<Vec<CompetitiveSummaryData>>();
+        let to_send = json!({"requests": final_result});
         client
-            .make_request(&uri, Method::POST, [("requests", serde_json::to_string(&final_params)?)])
+            .make_request_w_body(URL, Method::POST, None::<Vec<(String, String)>>, serde_json::to_string(&to_send)?)
             .await
+
     }
 
 

@@ -142,12 +142,28 @@ impl Client {
     }
     pub async fn make_request<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: I) -> Result<Response, Errors>
     where
-        I: IntoIterator,
+        I: IntoIterator + std::fmt::Debug,
         I::Item: Borrow<(K, V)>,
         K: AsRef<str>,
         V: AsRef<str>,
     {
+        println!("{:?}", parameters);
         //parameters.( ("marketplaceIds", self.client_information.country_marketplace.details().0));
         Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), parameters)?).headers(self.create_header()).send().await?)
+        //Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), parameters)?).headers(self.create_header()).send().await?)
     }
+    pub async fn make_request_w_body<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: Option<I>, body: String) -> Result<Response, Errors>
+    where
+        I: IntoIterator + std::fmt::Debug,
+        I::Item: Borrow<(K, V)>,
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
+        if let Some(param) = parameters {
+            Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), param)?).headers(self.create_header()).body(body).send().await?)
+        } else {
+            Ok(self.reqwest_client.request(method, Url::parse(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str())?).headers(self.create_header()).body(body).send().await?)
+        }
+    }
+
 }
