@@ -6,7 +6,7 @@ mod finances;
 mod fulfillment_inbound;
 mod fulfillment_outbound;
 mod invoices;
-mod listings;
+pub mod listings;
 mod merchant_fulfillment;
 mod messaging;
 mod notifications;

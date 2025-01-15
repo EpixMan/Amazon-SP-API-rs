@@ -5,7 +5,6 @@ use serde::Deserialize;
 use serde_json::json;
 use std::time::{ Instant};
 use reqwest::{ Response, Url};
-
 const ENDPOINT_NA: &str = "https://sellingpartnerapi-na.amazon.com";
 const ENDPOINT_EU: &str = "https://sellingpartnerapi-eu.amazon.com";
 const ENDPOINT_FE: &str = "https://sellingpartnerapi-fe.amazon.com";
@@ -97,6 +96,11 @@ impl CountryMarketplace {
             CountryMarketplace::Japan => ("A1VC38T7YXB528", ENDPOINT_FE),
         }
     }
+}
+#[macro_export] macro_rules! enum_to_string {
+    ($($type:ty)*) => {
+       stringify!($($type)*)
+    };
 }
 pub struct Client {
     access_token: AccessToken,
