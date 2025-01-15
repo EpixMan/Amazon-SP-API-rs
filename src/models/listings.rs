@@ -61,12 +61,8 @@ impl Listings {
 
     ) -> Result<Response, Errors> {
         let item_data: Value = Self::get_listings_item(client, seller_id, sku ,CountryMarketplace::SaudiArabia, vec![IncludedData::productTypes, IncludedData::attributes]).await?.json().await?;
-        println!("item_data: {:#?}", item_data);
         let item_type = &item_data["productTypes"][0]["productType"];
         let mut offers = item_data["attributes"]["purchasable_offer"].clone();
-
-        println!("1 is : {:?}",item_data["attributes"] );
-        println!("2 is : {:?}",&item_data["productTypes"][0]["productType"]);
 
         offers[0]["our_price"][0]["schedule"][0]["value_with_tax"] = Value::from(new_price);
         let final_body = json!({
@@ -77,9 +73,6 @@ impl Listings {
                   "value":offers
             }]
         });
-        println!("Item type is: {:#?}", item_type );
-        println!("{:#?}", final_body);
-
         Self::patch_listings_item(client, seller_id, sku, country_marketplace, validation_preview, &*final_body.to_string()).await
 
     }
