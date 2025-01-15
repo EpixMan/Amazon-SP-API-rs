@@ -1,8 +1,6 @@
 use reqwest::{Method, Response};
 use crate::error_handling::Errors;
 use crate::general::{Client, CountryMarketplace};
-use serde_json;
-
 pub struct CatalogItems;
 impl CatalogItems {
 
