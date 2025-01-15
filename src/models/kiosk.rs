@@ -85,7 +85,7 @@ impl Kiosk {
             parameters.push(("paginationToken", pagination_token))
         }
 
-        client.make_request( "/dataKiosk/2023-11-15/queries", Method::GET, parameters).await
+        client.make_request( "/dataKiosk/2023-11-15/queries", Method::GET, Some(parameters)).await
     }
 
 
@@ -106,7 +106,7 @@ impl Kiosk {
         body: String,
     ) -> Result<Response, Errors> {
         client
-            .make_request("/dataKiosk/2023-11-15/queries", Method::POST, [("body", body)])
+            .make_request("/dataKiosk/2023-11-15/queries", Method::POST, Some([("body", body)]))
             .await
     }
 
@@ -127,7 +127,7 @@ impl Kiosk {
         let endpoint = format!("/dataKiosk/2023-11-15/queries/{}", query_id);
 
         client
-            .make_request(&endpoint, Method::GET, None::<(String, String)>)
+            .make_request(&endpoint, Method::GET, None::<Vec<(String, String)>>)
             .await
     }
 
@@ -146,7 +146,7 @@ impl Kiosk {
         let endpoint = format!("/dataKiosk/2023-11-15/queries/{}", query_id);
 
         client
-            .make_request(&endpoint, Method::DELETE, None::<(String, String)>)
+            .make_request(&endpoint, Method::DELETE, None::<Vec<(String, String)>>)
             .await
     }
 
@@ -165,7 +165,7 @@ impl Kiosk {
         let endpoint = format!("/dataKiosk/2023-11-15/documents/{}", document_id);
 
         client
-            .make_request(&endpoint, Method::GET, None::<(String, String)>)
+            .make_request(&endpoint, Method::GET, None::<Vec<(String, String)>>)
             .await
     }
 }

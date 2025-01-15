@@ -146,16 +146,20 @@ impl Client {
         header_map.insert("user-agent", "Amazon-SP-API-rs 0.1.0".parse().unwrap());
         header_map
     }
-    pub async fn make_request<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: I) -> Result<Response, Errors>
+    pub async fn make_request<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: Option<I>) -> Result<Response, Errors>
     where
-        I: IntoIterator + std::fmt::Debug,
+        I: IntoIterator + std::fmt::Debug+ Clone,
         I::Item: Borrow<(K, V)>,
         K: AsRef<str>,
         V: AsRef<str>,
     {
-        println!("{:?}", parameters);
         //parameters.( ("marketplaceIds", self.client_information.country_marketplace.details().0));
-        Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), parameters)?).headers(self.create_header()).send().await?)
+        if let Some(params) = parameters {
+            Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}", self.client_information.country_marketplace.details().1, path).as_str(), params)?).headers(self.create_header()).send().await?)
+        }  else {
+            Ok(self.reqwest_client.request(method, Url::parse(format!("{}{}", self.client_information.country_marketplace.details().1, path).as_str())?).headers(self.create_header()).send().await?)
+
+        }
         //Ok(self.reqwest_client.request(method, Url::parse_with_params(format!("{}{}",self.client_information.country_marketplace.details().1, path).as_str(), parameters)?).headers(self.create_header()).send().await?)
     }
     pub async fn make_request_w_body<I, K, V>(&mut self, path: &str, method: reqwest::Method, parameters: Option<I>, body: String) -> Result<Response, Errors>

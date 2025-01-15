@@ -10,4 +10,6 @@ pub enum Errors {
     ParseError(#[from] ParseError),
     #[error(transparent)]
     SerdeError(#[from] serde_json::Error),
+    #[error("Error: {0}")]
+    CustomError(String),
 }

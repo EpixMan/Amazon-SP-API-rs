@@ -16,7 +16,7 @@ pub mod product_pricing;
 mod replenishment;
 mod reports;
 mod sales;
-mod sellers;
+pub mod sellers;
 mod services;
 mod shipment_invoicing;
 mod shipping;

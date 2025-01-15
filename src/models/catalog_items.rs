@@ -25,7 +25,7 @@ impl CatalogItems {
     /// - keywords_locale: Optional language of the keywords
     pub async fn search_catalog_items(
         client: &mut Client,
-        marketplace_ids: Vec<CountryMarketplace>,
+        marketplace_id: CountryMarketplace,
         identifiers: Option<Vec<String>>,
         identifiers_type: Option<String>,
         included_data: Option<Vec<String>>,
@@ -42,10 +42,8 @@ impl CatalogItems {
 
         let mut params: Vec<(String, String)> = Vec::new();
 
-        // Add required parameters
-        params.push(("marketplaceIds".to_string(), marketplace_ids.iter().map(|b|b.details().0.to_string()).collect::<Vec<String>>().join(",")));
+        params.push(("marketplaceIds".to_string(), marketplace_id.details().0.to_string()));
 
-        // Add optional parameters
         if let Some(ids) = identifiers {
             params.push(("identifiers".to_string(), ids.join(",")));
         }
@@ -79,8 +77,9 @@ impl CatalogItems {
         if let Some(kw_locale) = keywords_locale {
             params.push(("keywordsLocale".to_string(), kw_locale));
         }
+        println!("params: {:#?}", params);
 
-        client.make_request(URI, Method::GET, params).await
+        client.make_request(URI, Method::GET, Some(params)).await
     }
 
     /// Retrieves details for an item in the Amazon catalog by ASIN.
@@ -116,6 +115,6 @@ impl CatalogItems {
             params.push(("locale".to_string(), loc));
         }
 
-        client.make_request(&uri, Method::GET, params).await
+        client.make_request(&uri, Method::GET, Some(params)).await
     }
     }
