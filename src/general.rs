@@ -40,6 +40,7 @@ pub struct ClientInformation {
     pub client_secret: String,
     pub country_marketplace: CountryMarketplace,
 }
+#[allow(dead_code)]
 #[derive(Deserialize)]
 struct AccessToken {
     access_token: String,
@@ -102,6 +103,7 @@ impl CountryMarketplace {
        stringify!($($type)*)
     };
 }
+#[allow(dead_code)]
 pub struct Client {
     access_token: AccessToken,
     client_information: ClientInformation,

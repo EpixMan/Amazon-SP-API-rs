@@ -3,6 +3,7 @@ use crate::error_handling::Errors;
 use crate::general::Client;
 
 pub struct Kiosk;
+#[allow(dead_code)]
 pub enum ProcessingStatuses {
     CANCELLED,
     DONE,
