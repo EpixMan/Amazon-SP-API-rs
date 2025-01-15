@@ -1,6 +1,7 @@
 use reqwest::{Method, Response};
 use crate::error_handling::Errors;
 use crate::general::Client;
+#[allow(dead_code)]
 
 pub struct Kiosk;
 #[allow(dead_code)]
@@ -11,6 +12,7 @@ pub enum ProcessingStatuses {
     InProgress,
     InQueue,
 }
+#[allow(dead_code)]
 impl ProcessingStatuses {
     pub fn to_string(&self) -> String {
         match self {
@@ -22,7 +24,6 @@ impl ProcessingStatuses {
         }
     }
 }
-
 impl Kiosk {
     ///Returns details for the Data Kiosk queries that match the specified filters. See the createQuery operation for details about query retention.
     ///
