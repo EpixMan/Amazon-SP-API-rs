@@ -25,7 +25,7 @@ impl CatalogItems {
     /// - keywords_locale: Optional language of the keywords
     pub async fn search_catalog_items(
         client: &mut Client,
-        marketplace_id: CountryMarketplace,
+        marketplace_ids: Vec<CountryMarketplace>,
         identifiers: Option<Vec<String>>,
         identifiers_type: Option<String>,
         included_data: Option<Vec<String>>,
@@ -42,7 +42,7 @@ impl CatalogItems {
 
         let mut params: Vec<(String, String)> = Vec::new();
 
-        params.push(("marketplaceIds".to_string(), marketplace_id.details().0.to_string()));
+        params.push(("marketplaceIds".to_string(), marketplace_ids.iter().map(|b|b.details().0.to_string()).collect::<Vec<String>>().join(",")));
 
         if let Some(ids) = identifiers {
             params.push(("identifiers".to_string(), ids.join(",")));
@@ -77,8 +77,6 @@ impl CatalogItems {
         if let Some(kw_locale) = keywords_locale {
             params.push(("keywordsLocale".to_string(), kw_locale));
         }
-        println!("params: {:#?}", params);
-
         client.make_request(URI, Method::GET, Some(params)).await
     }
 

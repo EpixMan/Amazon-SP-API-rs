@@ -214,8 +214,6 @@ impl Listings {
             if let Some(token) = page_token {
                 params.push(("pageToken".to_string(), token));
             }
-            println!("{:#?}", params);
-
             client.make_request(&uri, Method::GET, Some(params)).await
         }
 }
